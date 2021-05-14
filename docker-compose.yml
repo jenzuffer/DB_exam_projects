@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  postgres2:
+    image: postgres:11-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=postgres_pass
+      - POSTGRES_CONTAINER_NAME=postgres2
+      - POSTGRES_PORT=5432
+    ports:
+        - 5432:5432
+    networks:
+      - app-network
+
+  core1:
+    hostname: core1
+    image: neo4j:enterprise
+    networks:
+     - app-network
+    ports:
+      - 7474:7474
+      - 6477:6477
+      - 7687:7687
+    container_name: core1
+    environment:
+      NEO4J_AUTH: neo4j/foobar
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_memory_pagecache_size: 1G
+      NEO4J_dbms.memory.heap.initial_size: 1G
+      NEO4J_dbms_memory_heap_max__size: 1G
+      NEO4J_causal__clustering_discovery__advertised__address: core1:5000
+      NEO4J_causal__clustering_transaction__advertised__address: core1:6000
+      NEO4J_causal__clustering_raft__advertised__address: core1:7000
+      NEO4J_causal__clustering_initial__discovery__members: core1:5000,core2:5000,core3:5000
+      NEO4JLABS_PLUGINS: '["graph-data-science"]'
+      NEO4J_dbms_security_procedures_unrestricted: gds.*
+      NEO4J_dbms_security_procedures_allowlist: gds.*
+
+  redis:
+    image: redis:alpine
+    container_name: redis_db
+    command: redis-server --appendonly yes
+    ports:
+      - 6379:6379
+    volumes:
+      - ./data:/data
+    restart: always
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: "bridge"
+
