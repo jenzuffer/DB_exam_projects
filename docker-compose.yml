@@ -14,6 +14,7 @@ services:
     networks:
       - app-network
 
+
   core1:
     hostname: core1
     image: neo4j:enterprise
@@ -37,6 +38,7 @@ services:
       NEO4JLABS_PLUGINS: '["graph-data-science"]'
       NEO4J_dbms_security_procedures_unrestricted: gds.*
       NEO4J_dbms_security_procedures_allowlist: gds.*
+
 
   redis:
     image: redis:alpine
