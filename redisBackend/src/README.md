@@ -3,3 +3,4 @@ docker compose up
 
 launch redis client with:
 docker exec -it redis_db redis-cli
+
