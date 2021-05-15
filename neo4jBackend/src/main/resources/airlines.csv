@@ -201,7 +201,7 @@ H9;PEGASUS AIRLINES-;Turkey
 IP;Island Spirit;Iceland
 QK;Air Canada Jazz;Canada
 KK;Atlasjet;Turkey
-JS;Air Koryo;Democratic People's Republic of Korea
+JS;Air Koryo;Democratic People\\'s Republic of Korea
 KC;Air Astana;Kazakhstan
 LV;Albanian Airlines;Albania
 D4;Alidaunia;Italy
@@ -495,7 +495,7 @@ T4;Hellas Jet;Greece
 HW;North-Wright Airways;Canada
 2L;Helvetic Airways;Switzerland
 DU;Norwegian Long Haul AS;Norway
-UD;Hex'Air;France
+UD;Hex\\'Air;France
 5K;Hi Fly (5K);Portugal
 HD;Hokkaido International Airlines;Japan
 H5;I-Fly;Russia
@@ -778,7 +778,7 @@ SC;Shandong Airlines;China
 3U;Sichuan Airlines;China
 FM;Shanghai Airlines;China
 ZH;Shenzhen Airlines;China
-7L;Sun D'Or;Israel
+7L;Sun D\\'Or;Israel
 NE;SkyEurope;Slovakia
 CQ;SOCHI AIR;Russia
 SO;Salsa d\\'Haiti;Haiti
