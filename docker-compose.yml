@@ -13,8 +13,7 @@ services:
         - 5432:5432
     networks:
       - app-network
-    volumes:
-      - ./data/sql:/data
+
   core1:
     hostname: core1
     image: neo4j:enterprise
@@ -38,16 +37,14 @@ services:
       NEO4JLABS_PLUGINS: '["graph-data-science"]'
       NEO4J_dbms_security_procedures_unrestricted: gds.*
       NEO4J_dbms_security_procedures_allowlist: gds.*
-    volumes:
-      - ./data/Neo4j:/data
+
   redis:
     image: redis:alpine
     container_name: redis_db
     command: redis-server --appendonly yes
     ports:
       - 6379:6379
-    volumes:
-      - ./data/redis:/data
+
     restart: always
     networks:
       - app-network
