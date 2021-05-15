@@ -4,6 +4,6 @@ docker compose up
 Neo4j receives its data from the 3 csv files. By launching neo4j you can visit 
 http://localhost:7474/browser/ and import the csv files with the following cypher commands:
 
-LOAD CSV FROM 'https://github.com/jenzuffer/DB_exam_projects/blob/main/neo4jBackend/src/main/resources/airlines.csv' AS line FIELDTERMINATOR ';'
-CREATE (:Airlines {code: line[1], name: line[2], country: line[3]})
+LOAD CSV FROM 'https://raw.githubusercontent.com/jenzuffer/DB_exam_projects/main/neo4jBackend/src/main/resources/airlines.csv' AS line FIELDTERMINATOR ';' 
+CREATE (:Airlines {code: line[0], name: line[1], country: line[2]})
 
