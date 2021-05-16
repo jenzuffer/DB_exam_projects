@@ -12,3 +12,21 @@ MATCH (n:Airlines)
 WHERE n.code = 'E7' XOR n.code = 'PE'
 return n.code, n.country, n.name
 
+
+LOAD CSV FROM 'https://raw.githubusercontent.com/jenzuffer/DB_exam_projects/main/neo4jBackend/src/main/resources/airports.csv' AS line FIELDTERMINATOR ';' 
+CREATE (:Airports {code: line[0], name: line[1], city: line[2], country: line[3], lattitude: line[4],
+longtitude: line[5]})
+
+example query:
+MATCH (n:Airports)
+WHERE n.code = 'YUT' XOR n.code = 'YVV'
+return n.code, n.country, n.city, n.name
+
+
+LOAD CSV FROM 'https://raw.githubusercontent.com/jenzuffer/DB_exam_projects/main/neo4jBackend/src/main/resources/routes.csv' AS line FIELDTERMINATOR ';' 
+CREATE (:Routes {airline_code: line[0], source_code: line[1], destination_code: line[2], distance: line[3], 
+time: line[4]})
+example query:
+MATCH (n:Routes)
+WHERE n.destination_code = 'KZN' XOR n.destination_code = 'UUA'
+return n.airline_code, n.source_code, n.destination_code, n.distance
