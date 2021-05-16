@@ -36,10 +36,11 @@ return n.airline_code, n.source_code, n.destination_code, n.distance
 
 
 
-
-
-bare test aktuelt
-CREATE INDEX ON :Routes(name);
-LOAD CSV FROM 'https://raw.githubusercontent.com/jenzuffer/DB_exam_projects/main/neo4jBackend/src/main/resources/routes.csv' AS line FIELDTERMINATOR ';' 
-MATCH (from:Routes  {name: line[1]}), (to:Routes {name: line[2]})
-CREATE (from)-[:RELATION]->(to);
+MATCH
+  (a:Routes),
+  (b:Airports),
+  (c:Airports)
+WHERE a.source_code = b.code AND a.destination_code = c.code
+CREATE (a)-[r:RELTYPE {relation: a.source_code + '<->' + b.code}]->(b)
+create (a)-[r1:RELTYPE {relation: a.destination_code + '<->' + c.code}]-> (c)
+RETURN type(r), r.relation, r1.relation
