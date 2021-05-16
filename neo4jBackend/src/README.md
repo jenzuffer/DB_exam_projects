@@ -35,7 +35,7 @@ return n.airline_code, n.source_code, n.destination_code, n.distance
 
 
 
-
+build relationship between airports and routes:
 MATCH
   (a:Routes),
   (b:Airports),
