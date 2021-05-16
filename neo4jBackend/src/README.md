@@ -30,3 +30,16 @@ example query:
 MATCH (n:Routes)
 WHERE n.destination_code = 'KZN' XOR n.destination_code = 'UUA'
 return n.airline_code, n.source_code, n.destination_code, n.distance
+
+
+
+
+
+
+
+
+bare test aktuelt
+CREATE INDEX ON :Routes(name);
+LOAD CSV FROM 'https://raw.githubusercontent.com/jenzuffer/DB_exam_projects/main/neo4jBackend/src/main/resources/routes.csv' AS line FIELDTERMINATOR ';' 
+MATCH (from:Routes  {name: line[1]}), (to:Routes {name: line[2]})
+CREATE (from)-[:RELATION]->(to);
