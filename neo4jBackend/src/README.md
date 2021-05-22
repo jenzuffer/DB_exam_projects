@@ -44,3 +44,13 @@ WHERE a.source_code = b.code AND a.destination_code = c.code
 CREATE (a)-[r:RELTYPE {relation: a.source_code + '<->' + b.code}]->(b)
 create (a)-[r1:RELTYPE {relation: a.destination_code + '<->' + c.code}]-> (c)
 RETURN type(r), r.relation, r1.relation
+
+
+CALL gds.graph.create(
+    'myGraph',
+    'route',
+    'RELTYPE',
+    {
+        relationshipProperties: 'relation'
+    }
+)
