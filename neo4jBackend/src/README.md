@@ -65,19 +65,29 @@ Match (a:Routes)
 match (b:Airports)
 match (c:Airports)
 where a.source_code = b.code and a.destination_code = c.code
-merge (b)-[:relation {distance: a.distance}]->(a)
-merge (a)-[:relation {distance: a.distance}]->(c)
+CREATE (b)-[:relation {distance: a.distance}]->(a)
+CREATE (a)-[:relation {distance: a.distance}]->(c)
 return type(r), b, c
+
+
+
+Match (a:Routes)
+match (b:Airports)
+match (c:Airports)
+where a.source_code = b.code and a.destination_code = c.code
+CREATE (b)-[r:RELTYPE {distance: a.distance}]->(c)
+
 
 
 CALL gds.graph.create(
     'myGraph1',
-    'Routes',
-    'relation',
+    'Airports',
+    'code',
     {
         relationshipProperties: 'distance'
     }
 )
+
 
 MATCH (source:Routes {source_code: 'RKV'}), (target:Routes {destination_code: 'WWK'})
 CALL gds.beta.shortestPath.dijkstra.write.estimate('myGraph', {
@@ -93,3 +103,6 @@ RETURN nodeCount, relationshipCount, bytesMin, bytesMax, requiredMemory
 delete everything:
 MATCH (n)
 DETACH DELETE n
+
+//delete graph:
+CALL gds.graph.drop('myGraph')
