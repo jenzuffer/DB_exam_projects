@@ -67,10 +67,12 @@ CREATE (b)-[:COMES_FROM {distance: a.distance}]->(a)
 CREATE (a)-[:GOES_TO {distance: a.distance}]->(c)
 
 
+
+//forkert, for mange relationer
 CALL gds.graph.create(
     'myGraph',
-    'Route',
-    'RELTYPE',
+    '*',
+    'GOES_TO',
     {
         relationshipProperties: 'distance'
     }
@@ -80,17 +82,17 @@ CALL gds.graph.create(
 
 
 
-
-
-MATCH (source:Routes {source_code: 'RKV'}), (target:Routes {destination_code: 'WWK'})
-CALL gds.beta.shortestPath.dijkstra.write.estimate('myGraph', {
+MATCH (source:Airport {id: 'OKA'}), (target:Airport {id: 'KIX'})
+CALL gds.beta.shortestPath.astar.write.estimate('myGraph', {
     sourceNode: id(source),
     targetNode: id(target),
-    relationshipWeightProperty: 'distance',
+    latitudeProperty: 'latitude',
+    longitudeProperty: 'longitude',
     writeRelationshipType: 'PATH'
 })
 YIELD nodeCount, relationshipCount, bytesMin, bytesMax, requiredMemory
 RETURN nodeCount, relationshipCount, bytesMin, bytesMax, requiredMemory
+
 
 
 delete everything:
