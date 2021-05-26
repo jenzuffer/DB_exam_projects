@@ -9,7 +9,7 @@ CREATE (B:Airline {code: airlines.CODE, name: airlines.NAME, country: airlines.C
 
 
 example query:
-MATCH (n:Airlines)
+MATCH (n:Airline)
 WHERE n.code = 'E7' XOR n.code = 'PE'
 return n.code, n.country, n.name
 
@@ -17,21 +17,21 @@ return n.code, n.country, n.name
 Create CONSTRAINT ON (a:Airport) ASSERT a.id IS UNIQUE;
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/jenzuffer/DB_exam_projects/main/neo4jBackend/src/main/resources/airports.csv' AS airports FIELDTERMINATOR ';'
 CREATE(airport:Airport {id:airports.CODE, name: airports.NAME, city: airports.CITY, country: airports.COUNTRY, latitude:toFloat(airports.LATITUDE),
-longitude: toFloat(airports.LONGITUDE)});
+longitude:toFloat(airports.LONGITUDE)});
 
 
 example query:
-MATCH (n:Airports)
+MATCH (n:Airport)
 WHERE n.code = 'YUT' XOR n.code = 'YVV'
 return n.code, n.country, n.city, n.name
 
 
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/jenzuffer/DB_exam_projects/main/neo4jBackend/src/main/resources/routes.csv' AS routes FIELDTERMINATOR ';' 
-CREATE (R:Route {airline_code: routes.AIRLINE_CODE, departure : routes.SOURCE_CODE, arrival: routes.DESTINATION_CODE, distance: toFloat(routes.DISTANCE), 
-time: toFloat(routes.TIME)})
+CREATE (R:Route {airline_code: routes.AIRLINE_CODE, departure : routes.SOURCE_CODE, arrival: routes.DESTINATION_CODE, distance:toFloat(routes.DISTANCE), 
+time:toFloat(routes.TIME)})
 
 example query:
-MATCH (n:Routes)
+MATCH (n:Route)
 WHERE n.destination_code = 'KZN' XOR n.destination_code = 'UUA'
 return n.airline_code, n.source_code, n.destination_code, n.distance
 
@@ -68,20 +68,30 @@ CREATE (a)-[:GOES_TO {distance: a.distance}]->(c)
 
 
 
-//forkert, for mange relationer
 CALL gds.graph.create(
     'myGraph',
     '*',
-    'GOES_TO',
+    ['COMES_FROM', 'GOES_TO'],
     {
-        relationshipProperties: 'distance'
+        relationshipProperties: ['distance'],
+        nodeProperties: ['latitude', 'longitude']
+    }
+)
+
+//not working
+CALL gds.graph.create(
+    'myGraph',
+    ['Airport', 'Route'],
+    ['COMES_FROM', 'GOES_TO'],
+    {
+        relationshipProperties: 'distance',
+        nodeProperties: ['latitude', 'longitude']
     }
 )
 
 
 
-
-
+//The following will estimate the memory requirements for running the algorithm in write mode:
 MATCH (source:Airport {id: 'OKA'}), (target:Airport {id: 'KIX'})
 CALL gds.beta.shortestPath.astar.write.estimate('myGraph', {
     sourceNode: id(source),
@@ -93,6 +103,58 @@ CALL gds.beta.shortestPath.astar.write.estimate('myGraph', {
 YIELD nodeCount, relationshipCount, bytesMin, bytesMax, requiredMemory
 RETURN nodeCount, relationshipCount, bytesMin, bytesMax, requiredMemory
 
+
+
+//The following will run the algorithm and stream results:
+MATCH (source:Airport {id: 'OKA'}), (target:Airport {id: 'KIX'})
+CALL gds.beta.shortestPath.astar.stream('myGraph', {
+    sourceNode: id(source),
+    targetNode: id(target),
+    latitudeProperty: 'latitude',
+    longitudeProperty: 'longitude',
+    relationshipWeightProperty: 'distance'
+})
+YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs
+RETURN
+    index,
+    gds.util.asNode(sourceNode).name AS sourceNodeName,
+    gds.util.asNode(targetNode).name AS targetNodeName,
+    totalCost,
+    [nodeId IN nodeIds | gds.util.asNode(nodeId).name] AS nodeNames,
+    costs
+ORDER BY index
+
+//relationship which selects a specific airport to find all routes comming from it
+MATCH (p:Airport {id: 'OKA'})-[r]->(route)
+RETURN p, route
+
+
+//dijstrka graph
+CALL gds.graph.create(
+    'myGraph1',
+    ['Route', 'Airport'],
+    ['*'],
+    {
+        relationshipProperties: 'distance'
+    }
+)
+
+
+//dijsktra search
+MATCH (source:Airport {id: 'OKA'})
+CALL gds.beta.allShortestPaths.dijkstra.stream('myGraph1', {
+    sourceNode: id(source),
+    relationshipWeightProperty: 'distance'
+})
+YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs
+RETURN
+    index,
+    gds.util.asNode(sourceNode).name AS sourceNodeName,
+    gds.util.asNode(targetNode).name AS targetNodeName,
+    totalCost,
+    [nodeId IN nodeIds | gds.util.asNode(nodeId).name] AS nodeNames,
+    costs
+ORDER BY index
 
 
 delete everything:
