@@ -131,12 +131,17 @@ ORDER BY index
 MATCH (p:Airport {id: 'OKA'})-[r]->(route)
 RETURN p, route
 
+//this cypher query retrieves all direct routes to and from a specific airport and gives the names fo these airports.
+MATCH (p:Airport {id: 'OKA'})<-[r]->(route)
+with route, p
+MATCH (p1:Airport{id: route.departure})-[r]->(route)
+RETURN p, route, p1
 
 //dijstrka graph
 CALL gds.graph.create(
     'myGraph1',
-    ['Route', 'Airport'],
-    ['*'],
+    ['Airport', 'Route'],
+    ['GOES_TO'],
     {
         relationshipProperties: 'distance'
     }
@@ -144,9 +149,10 @@ CALL gds.graph.create(
 
 
 //dijsktra search
-MATCH (source:Airport {id: 'OKA'})
-CALL gds.beta.allShortestPaths.dijkstra.stream('myGraph1', {
+MATCH (source:Airport {id: 'OKA'}), (target:Airport {id: 'DME'})
+CALL gds.beta.shortestPath.dijkstra.stream('myGraph1', {
     sourceNode: id(source),
+    targetNode: id(target),
     relationshipWeightProperty: 'distance'
 })
 YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs
