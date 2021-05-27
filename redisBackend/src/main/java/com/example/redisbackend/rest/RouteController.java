@@ -24,9 +24,9 @@ public class RouteController {
     URI uri;
 
     @GetMapping("/allroutesto}")
-    public Set<Route> findAllRoutesTo(@PathVariable String bDestination) {
+    public Set<Route> findAllRoutesTo(@RequestBody String bDestination) {
         Set<Route> allRoutesToB = routeManagement.getAllRoutesToB(bDestination);
-        if (allRoutesToB.isEmpty()){
+        if (allRoutesToB.isEmpty()) {
             final String apiGatewayURL = "http://localhost:9081/routestodestination/" + bDestination;
             try {
                 uri = new URI(apiGatewayURL);
@@ -35,11 +35,24 @@ public class RouteController {
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-
         }
         return allRoutesToB;
+    }
 
-
+    @GetMapping("/allroutesAtoB}")
+    public Set<Route> findAllROutesFromAToB(@RequestBody String departure, String destination) {
+        Set<Route> allRoutesFromAToB = routeManagement.getAllRoutesFromAToB(departure, destination);
+        if (allRoutesFromAToB.isEmpty()) {
+            final String apiGatewayURL = "http://localhost:9081/allroutes/" + departure + "/" + destination;
+            try {
+                uri = new URI(apiGatewayURL);
+                ResponseEntity<String> forEntity = restTemplate.getForEntity(uri, String.class);
+                System.out.println("forEntity: " + forEntity);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return allRoutesFromAToB;
     }
 
     @PostMapping("/updateroutecache")

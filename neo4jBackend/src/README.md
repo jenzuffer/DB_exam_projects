@@ -46,21 +46,6 @@ return n.airline_code, n.source_code, n.destination_code, n.distance
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //build relationship between airports and routes:
 Match (a:Route)
 match (b:Airport)
@@ -70,28 +55,28 @@ CREATE (b)-[:COMES_FROM {distance: a.distance}]->(a)
 CREATE (a)-[:GOES_TO {distance: a.distance}]->(c)
 
 
-//working graph for a-star
+
+//creates graph for diijkstra
+CALL gds.graph.create(
+    'myGraph1',
+    ['Airport', 'Route'],
+    'CONNECTED',
+    {
+        relationshipProperties: 'distance'
+    }
+)
+
+
+//creates graph for astar
 CALL gds.graph.create(
     'myGraph',
     '*',
-    ['COMES_FROM', 'GOES_TO'],
+    'CONNECTED',
     {
-        relationshipProperties: ['distance'],
-        nodeProperties: ['latitude', 'longitude']
+        nodeProperties: ['latitude', 'longitude'],
+        relationshipProperties: 'distance'
     }
 )
-
-//not working
-CALL gds.graph.create(
-    'myGraph',
-    ['Airport', 'Route'],
-    ['COMES_FROM', 'GOES_TO'],
-    {
-        relationshipProperties: 'distance',
-        nodeProperties: ['latitude', 'longitude']
-    }
-)
-
 
 
 //The following will estimate the memory requirements for running the algorithm in write mode:
@@ -109,7 +94,7 @@ RETURN nodeCount, relationshipCount, bytesMin, bytesMax, requiredMemory
 
 
 //The following will run the algorithm and stream results:
-MATCH (source:Airport {id: 'OKA'}), (target:Airport {id: 'KIX'})
+MATCH (source:Airport {id: 'URC'}), (target:Airport {id: 'SCO'})
 CALL gds.beta.shortestPath.astar.stream('myGraph', {
     sourceNode: id(source),
     targetNode: id(target),
@@ -127,6 +112,8 @@ RETURN
     costs
 ORDER BY index
 
+
+
 //relationship which selects a specific airport to find all routes comming from it
 MATCH (p:Airport {id: 'OKA'})-[r]->(route)
 RETURN p, route
@@ -137,22 +124,29 @@ with route, p
 MATCH (p1:Airport{id: route.departure})-[r]->(route)
 RETURN p, route, p1
 
-//dijstrka graph
-CALL gds.graph.create(
-    'myGraph1',
-    ['Airport', 'Route'],
-    ['GOES_TO'],
-    {
-        relationshipProperties: 'distance'
-    }
-)
 
 
-//dijsktra search
-MATCH (source:Airport {id: 'OKA'}), (target:Airport {id: 'DME'})
-CALL gds.beta.shortestPath.dijkstra.stream('myGraph1', {
+
+
+
+//relationship for dijkstra and astar algorithm gds
+Match (a:Route)
+match (b:Airport)
+match (c:Airport)
+where a.departure = b.id and a.arrival = c.id
+CREATE (b)-[:CONNECTED {distance: a.distance, airline_code: a.airline_code, departure: a.departure, arrival: a.arrival
+, time: a.time}]->(c)
+
+
+
+//deleting relationship type: 
+MATCH (Raul)-[r:CONNECTED]->(It)DELETE r 
+
+
+//dijkstra for a specific airport
+MATCH (source:Airport {id: 'URC'})
+CALL gds.beta.allShortestPaths.dijkstra.stream('myGraph1', {
     sourceNode: id(source),
-    targetNode: id(target),
     relationshipWeightProperty: 'distance'
 })
 YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs
@@ -166,13 +160,30 @@ RETURN
 ORDER BY index
 
 
+
+
+
+
+//dijsktra search
+MATCH (source:Airport {id: 'URC'}), (target:Airport {id: 'SCO'})
+CALL gds.beta.allShortestPaths.dijkstra.stream('myGraph1', {
+    sourceNode: id(source),
+    relationshipWeightProperty: 'distance'
+})
+YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs
+RETURN
+    index,
+    gds.util.asNode(sourceNode).name AS sourceNodeName,
+    gds.util.asNode(targetNode).name AS targetNodeName,
+    totalCost,
+    [nodeId IN nodeIds | gds.util.asNode(nodeId).name] AS nodeNames,
+    costs
+ORDER BY costs
+
+
 //delete everything:
 MATCH (n)
 DETACH DELETE n
 
 //delete graph:
 CALL gds.graph.drop('myGraph')
-
-
-
-//ny
