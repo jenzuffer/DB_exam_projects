@@ -1,6 +1,7 @@
 package com.example.redisbackend.rest;
 
 
+import com.example.redisbackend.dto.FindRoute;
 import com.example.redisbackend.dto.Route;
 import com.example.redisbackend.impl.RouteManagementImpl;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +12,7 @@ import redis.clients.jedis.Jedis;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -22,6 +24,19 @@ public class RouteController {
     RouteManagementImpl routeManagement = new RouteManagementImpl(jedis);
     RestTemplate restTemplate = new RestTemplate();
     URI uri;
+
+
+    @PostMapping("")
+    public FindRoute test(@RequestBody FindRoute findRoute) throws URISyntaxException {
+        String temp = "http://localhost:9081/neo4j";
+        uri = new URI(temp);
+
+        FindRoute hey = restTemplate.postForObject(uri,findRoute,FindRoute.class);
+
+        return findRoute;
+    }
+
+
 
     @GetMapping("/allroutesto}")
     public Set<Route> findAllRoutesTo(@RequestBody String bDestination) {
@@ -40,13 +55,13 @@ public class RouteController {
     }
 
     @PostMapping("/allroutesAtoB}")
-    public Set<Route> findAllROutesFromAToB(@RequestBody String departure, String destination) {
-        Set<Route> allRoutesFromAToB = routeManagement.getAllRoutesFromAToB(departure, destination);
+    public Set<Route> findAllROutesFromAToB(@RequestBody FindRoute findRoute) {
+        Set<Route> allRoutesFromAToB = routeManagement.getAllRoutesFromAToB(findRoute.departure, findRoute.destination);
         if (allRoutesFromAToB.isEmpty()) {
-            final String apiGatewayURL = "http://localhost:9081/allroutes/" + departure + "/" + destination;
+            final String apiGatewayURL = "http://localhost:9081/allroutes/" + findRoute.departure + "/" + findRoute.destination;
             try {
                 uri = new URI(apiGatewayURL);
-                ResponseEntity<String> forEntity = restTemplate.getForEntity(uri, String.class);
+                ResponseEntity<Route> forEntity = restTemplate.getForEntity(uri, Route.class);
                 System.out.println("forEntity: " + forEntity);
             } catch (URISyntaxException e) {
                 e.printStackTrace();

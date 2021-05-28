@@ -10,12 +10,6 @@ LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/jenzuffer/DB_exam_
 CREATE (B:Airline {code: airlines.CODE, name: airlines.NAME, country: airlines.COUNTRY})
 
 
-//example query:
-MATCH (n:Airline)
-WHERE n.code = 'E7' XOR n.code = 'PE'
-return n.code, n.country, n.name
-
-
 //load airports
 Create CONSTRAINT ON (a:Airport) ASSERT a.id IS UNIQUE;
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/jenzuffer/DB_exam_projects/main/neo4jBackend/src/main/resources/airports.csv' AS airports FIELDTERMINATOR ';'
@@ -23,34 +17,22 @@ CREATE(airport:Airport {id:airports.CODE, name: airports.NAME, city: airports.CI
 longitude:toFloat(airports.LONGITUDE)});
 
 
-//example query:
-MATCH (n:Airport)
-WHERE n.code = 'YUT' XOR n.code = 'YVV'
-return n.code, n.country, n.city, n.name
-
 
 //load routes
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/jenzuffer/DB_exam_projects/main/neo4jBackend/src/main/resources/routes.csv' AS routes FIELDTERMINATOR ';' 
-CREATE (R:Route {airline_code: routes.AIRLINE_CODE, departure : routes.SOURCE_CODE, arrival: routes.DESTINATION_CODE, distance:toFloat(routes.DISTANCE), 
+CREATE (route:Route {airline_code: routes.AIRLINE_CODE, departure : routes.SOURCE_CODE, arrival: routes.DESTINATION_CODE, distance:toFloat(routes.DISTANCE), 
 time:toFloat(routes.TIME)})
 
-//example query:
-MATCH (n:Route)
-WHERE n.destination_code = 'KZN' XOR n.destination_code = 'UUA'
-return n.airline_code, n.source_code, n.destination_code, n.distance
 
 
 
-
-
-
-
-
-//build relationship between airports and routes:
+//relationship for dijkstra and astar algorithm gds
 Match (a:Route)
 match (b:Airport)
 match (c:Airport)
 where a.departure = b.id and a.arrival = c.id
+CREATE (b)-[:CONNECTED {distance: a.distance, airline_code: a.airline_code, departure: a.departure, arrival: a.arrival
+, time: a.time}]->(c)
 CREATE (b)-[:COMES_FROM {distance: a.distance}]->(a)
 CREATE (a)-[:GOES_TO {distance: a.distance}]->(c)
 
@@ -68,6 +50,7 @@ CALL gds.graph.create(
 
 
 //creates graph for astar
+
 CALL gds.graph.create(
     'myGraph',
     '*',
@@ -77,7 +60,6 @@ CALL gds.graph.create(
         relationshipProperties: 'distance'
     }
 )
-
 
 //The following will estimate the memory requirements for running the algorithm in write mode:
 MATCH (source:Airport {id: 'OKA'}), (target:Airport {id: 'KIX'})
@@ -126,23 +108,6 @@ RETURN p, route, p1
 
 
 
-
-
-
-//relationship for dijkstra and astar algorithm gds
-Match (a:Route)
-match (b:Airport)
-match (c:Airport)
-where a.departure = b.id and a.arrival = c.id
-CREATE (b)-[:CONNECTED {distance: a.distance, airline_code: a.airline_code, departure: a.departure, arrival: a.arrival
-, time: a.time}]->(c)
-
-
-
-//deleting relationship type: 
-MATCH (Raul)-[r:CONNECTED]->(It)DELETE r 
-
-
 //dijkstra for a specific airport
 MATCH (source:Airport {id: 'URC'})
 CALL gds.allShortestPaths.dijkstra.stream('myGraph1', {
@@ -158,10 +123,6 @@ RETURN
     [nodeId IN nodeIds | gds.util.asNode(nodeId).name] AS nodeNames,
     costs
 ORDER BY index
-
-
-
-
 
 
 //dijsktra search
@@ -181,9 +142,30 @@ RETURN
 ORDER BY costs
 
 
-//delete everything:
-MATCH (n)
-DETACH DELETE n
+
+//example query:
+MATCH (n:Airport)
+WHERE n.code = 'YUT' XOR n.code = 'YVV'
+return n.code, n.country, n.city, n.name
+
+//example query:
+MATCH (n:Airline)
+WHERE n.code = 'E7' XOR n.code = 'PE'
+return n.code, n.country, n.name
+
+//example query:
+MATCH (n:Route)
+WHERE n.destination_code = 'KZN' XOR n.destination_code = 'UUA'
+return n.airline_code, n.source_code, n.destination_code, n.distance
+
+
+
+//deleting relationship type: 
+MATCH (Raul)-[r:CONNECTED]->(It)DELETE r 
 
 //delete graph:
 CALL gds.graph.drop('myGraph')
+
+//delete everything:
+MATCH (n)
+DETACH DELETE n

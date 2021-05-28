@@ -17,4 +17,31 @@ public class Route {
         this.origin = origin;
         this.flight_switches = flight_switches;
     }
+
+    public Route() {
+    }
+
+    public void setKilometer_distance(float kilometer_distance) {
+        this.kilometer_distance = kilometer_distance;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
+    public void setFlight_duration(String flight_duration) {
+        this.flight_duration = flight_duration;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public void setFlight_switches(int flight_switches) {
+        this.flight_switches = flight_switches;
+    }
 }
