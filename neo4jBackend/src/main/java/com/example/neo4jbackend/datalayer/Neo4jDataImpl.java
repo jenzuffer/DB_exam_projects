@@ -33,14 +33,15 @@ public class Neo4jDataImpl {
 
     public Set<Route> getRoutesToDestination(String destination) {
         try (Session session = driver.session()) {
-            Set<Route> routes = session.writeTransaction(new TransactionWork() {
+            Set<Route> routes = (Set<Route>)session.writeTransaction(new TransactionWork() {
                 @Override
                 public Set<Route> execute(Transaction tx) {
+                    HashSet<Route> sets = new HashSet<>();
                     Result result = tx.run("CREATE (a:Greeting) " +
                                     "SET a.message = $message " +
                                     "RETURN a.message + ', from node ' + id(a)",
-                            parameters("message", message));
-                    return result.single().get(0).asString();
+                            parameters("message", destination));
+                    return sets;
                 }
             });
             return routes;
@@ -49,7 +50,7 @@ public class Neo4jDataImpl {
 
     public Set<Route> getRoutesFromAtoB(String start, String destination) {
         try (Session session = driver.session()) {
-            Set<Route> routes = session.writeTransaction(new TransactionWork() {
+            Set<Route> routes = (Set<Route>) session.writeTransaction(new TransactionWork() {
                 @Override
                 public Set<Route> execute(Transaction tx) {
                     HashSet<Route> sets = new HashSet<>();
@@ -71,7 +72,7 @@ public class Neo4jDataImpl {
                     for (Record record : list){
                         System.out.println("");
                     }
-
+                return sets;
                 }
             });
             return routes;

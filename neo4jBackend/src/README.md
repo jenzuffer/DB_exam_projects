@@ -81,7 +81,7 @@ CALL gds.graph.create(
 
 //The following will estimate the memory requirements for running the algorithm in write mode:
 MATCH (source:Airport {id: 'OKA'}), (target:Airport {id: 'KIX'})
-CALL gds.beta.shortestPath.astar.write.estimate('myGraph', {
+CALL gds.shortestPath.astar.write.estimate('myGraph', {
     sourceNode: id(source),
     targetNode: id(target),
     latitudeProperty: 'latitude',
@@ -95,7 +95,7 @@ RETURN nodeCount, relationshipCount, bytesMin, bytesMax, requiredMemory
 
 //The following will run the algorithm and stream results:
 MATCH (source:Airport {id: 'URC'}), (target:Airport {id: 'SCO'})
-CALL gds.beta.shortestPath.astar.stream('myGraph', {
+CALL gds.shortestPath.astar.stream('myGraph', {
     sourceNode: id(source),
     targetNode: id(target),
     latitudeProperty: 'latitude',
@@ -145,7 +145,7 @@ MATCH (Raul)-[r:CONNECTED]->(It)DELETE r
 
 //dijkstra for a specific airport
 MATCH (source:Airport {id: 'URC'})
-CALL gds.beta.allShortestPaths.dijkstra.stream('myGraph1', {
+CALL gds.allShortestPaths.dijkstra.stream('myGraph1', {
     sourceNode: id(source),
     relationshipWeightProperty: 'distance'
 })
@@ -166,7 +166,7 @@ ORDER BY index
 
 //dijsktra search
 MATCH (source:Airport {id: 'URC'}), (target:Airport {id: 'SCO'})
-CALL gds.beta.allShortestPaths.dijkstra.stream('myGraph1', {
+CALL gds.allShortestPaths.dijkstra.stream('myGraph1', {
     sourceNode: id(source),
     relationshipWeightProperty: 'distance'
 })

@@ -39,7 +39,7 @@ public class RouteController {
         return allRoutesToB;
     }
 
-    @GetMapping("/allroutesAtoB}")
+    @PostMapping("/allroutesAtoB}")
     public Set<Route> findAllROutesFromAToB(@RequestBody String departure, String destination) {
         Set<Route> allRoutesFromAToB = routeManagement.getAllRoutesFromAToB(departure, destination);
         if (allRoutesFromAToB.isEmpty()) {
