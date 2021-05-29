@@ -21,22 +21,22 @@ public class Neo4jController {
 
     @PostMapping("")
     @ResponseBody
-    public FindRoute test(@RequestBody FindRoute findRoute){
-        return findRoute;
+    public FindRoute test(@RequestBody FindRoute findRoute) {
+        return new FindRoute("no", "bæ");
     }
 
 
     @GetMapping("/routestodestination/")
-    public @ResponseBody
-    Set<Route> getRoutesToDestination(@PathVariable String bDestination) {
+    @ResponseBody
+    public Set<Route> getRoutesToDestination(@RequestBody String bDestination) {
         //check neo4j for route og opdater så redis cache
         Set<Route> routes = neo4jDataimpl.getRoutesToDestination(bDestination);
         return routes;
     }
 
     @GetMapping("/allroutes/")
-    public @ResponseBody
-    Set<Route> getRoutesfromAtoB(@PathVariable String start, String destination) {
-         return neo4jDataimpl.getRoutesFromAtoB(start, destination);
+    @ResponseBody
+    public Set<Route> getRoutesfromAtoB(@RequestBody FindRoute findRoute) {
+        return neo4jDataimpl.getRoutesFromAtoB(findRoute);
     }
 }

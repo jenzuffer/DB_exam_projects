@@ -1,5 +1,6 @@
 package com.example.neo4jbackend.datalayer;
 
+import com.example.neo4jbackend.dto.FindRoute;
 import com.example.neo4jbackend.dto.Route;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
@@ -48,7 +49,7 @@ public class Neo4jDataImpl {
         }
     }
 
-    public Set<Route> getRoutesFromAtoB(String start, String destination) {
+    public Set<Route> getRoutesFromAtoB(FindRoute findRoute) {
         try (Session session = driver.session()) {
             Set<Route> routes = (Set<Route>) session.writeTransaction(new TransactionWork() {
                 @Override
@@ -67,7 +68,7 @@ public class Neo4jDataImpl {
                             "    totalCost,\n" +
                             "    [nodeId IN nodeIds | gds.util.asNode(nodeId).name] AS nodeNames,\n" +
                             "    costs\n" +
-                            "ORDER BY costs", parameters("sourceAir", start, "destiAir", destination));
+                            "ORDER BY costs", parameters("sourceAir", findRoute.departure, "destiAir", findRoute.destination));
                     List<Record> list = result.list();
                     for (Record record : list){
                         System.out.println("");
