@@ -28,19 +28,6 @@ public class RouteController {
     URI uri;
 
 
-    @PostMapping("")
-    public FindRoute test(@RequestBody FindRoute findRoute) throws URISyntaxException {
-        String temp = "http://localhost:9081/neo4j";
-        uri = new URI(temp);
-        FindRoute hey = restTemplate.postForObject(uri,findRoute,FindRoute.class);
-        return null;
-       /* System.out.println(findRoute);
-        List mylist = new ArrayList<Route>();
-        mylist.add(new Route(1f,1f,"he","he","he",1));
-        mylist.add(new Route(1f,1f,"hef","fhe","hef",1));
-        Set<Route> set = Set.copyOf(mylist);
-        return set; */
-    }
 
     @GetMapping("/allroutesto}")
     public Set<Route> findAllRoutesTo(@RequestBody String bDestination) {

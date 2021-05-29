@@ -19,11 +19,6 @@ public class Neo4jController {
     private RestTemplate restTemplate = new RestTemplate();
     private URI uri;
 
-    @PostMapping("")
-    @ResponseBody
-    public FindRoute test(@RequestBody FindRoute findRoute) {
-        return new FindRoute("no", "bæ");
-    }
 
 
     @GetMapping("/routestodestination/")
