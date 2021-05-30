@@ -47,10 +47,43 @@ public class Neo4jDataImpl {
                     List<Record> list = result.list();
                     for (Record record : list) {
                         ObjectMapper mapper = new ObjectMapper();
-                        Route routeObject = mapper.convertValue(record.asMap() , Route.class);
+                        Route routeObject = mapper.convertValue(record.asMap(), Route.class);
                         sets.add(routeObject);
                     }
                     return sets;
+                }
+            });
+            return routes;
+        }
+    }
+
+    public Route getShortestRouteFromAtoB(FindRoute findRoute) {
+        try (Session session = driver.session()) {
+            Route routes = (Route) session.writeTransaction(new TransactionWork() {
+                @Override
+                public Route execute(Transaction tx) {
+                    Route route = new Route();
+                    Result result = tx.run("MATCH (source:Airport {id: 'URC'}), (target:Airport {id: 'SCO'})\n" +
+                            "CALL gds.shortestPath.astar.stream('myGraph', {\n" +
+                            "    sourceNode: id(source),\n" +
+                            "    targetNode: id(target),\n" +
+                            "    latitudeProperty: 'latitude',\n" +
+                            "    longitudeProperty: 'longitude',\n" +
+                            "    relationshipWeightProperty: 'distance'\n" +
+                            "})\n" +
+                            "YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs\n" +
+                            "RETURN\n" +
+                            "    index,\n" +
+                            "    gds.util.asNode(sourceNode).name AS sourceNodeName,\n" +
+                            "    gds.util.asNode(targetNode).name AS targetNodeName,\n" +
+                            "    totalCost,\n" +
+                            "    [nodeId IN nodeIds | gds.util.asNode(nodeId).name] AS nodeNames,\n" +
+                            "    costs\n" +
+                            "ORDER BY costs");
+                    Record single = result.single();
+                    ObjectMapper mapper = new ObjectMapper();
+                    route = mapper.convertValue(single.asMap(), Route.class);
+                    return route;
                 }
             });
             return routes;

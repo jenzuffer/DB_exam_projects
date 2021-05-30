@@ -13,10 +13,7 @@ import redis.clients.jedis.Jedis;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/route")
@@ -36,8 +33,8 @@ public class RouteController {
             final String apiGatewayURL = "http://localhost:9081/neo4j/allroutes/";
             try {
                 uri = new URI(apiGatewayURL);
-                Route[] var  =  restTemplate.postForObject(uri,findRoute, Route[].class);
-                for (Route route : var){
+                Route[] var = restTemplate.postForObject(uri, findRoute, Route[].class);
+                for (Route route : var) {
                     allRoutesFromAToB.add(route);
                 }
                 routeManagement.addRouteCache(findRoute, allRoutesFromAToB);
@@ -48,17 +45,34 @@ public class RouteController {
         return allRoutesFromAToB;
     }
 
+    @GetMapping("/shortestRouteAToB")
+    public Route findShortestRouteAToB(@RequestBody FindRoute findRoute) {
+        Route shortestRouteFromAtoB = routeManagement.getShortestRouteFromAtoB(findRoute.departure, findRoute.destination);
+        if (shortestRouteFromAtoB == null) {
+            final String apiGatewayURL = "http://localhost:9081/neo4j/shortestroute/";
+            try {
+                uri = new URI(apiGatewayURL);
+                shortestRouteFromAtoB = restTemplate.postForObject(uri, findRoute, Route.class);
+                System.out.println("shortestRouteFromAtoB: " + shortestRouteFromAtoB.destination);
+                routeManagement.addShortestRouteCache(findRoute, shortestRouteFromAtoB);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return shortestRouteFromAtoB;
+    }
+
 
     @PostMapping("/createBooking")
-    public boolean createBooking(@RequestBody BookingDTO bookingDTO){
+    public boolean createBooking(@RequestBody BookingDTO bookingDTO) {
         FindRoute findRoute = new FindRoute(bookingDTO.getAirportDeparture(), bookingDTO.getAirportArrival());
         Set<Route> allROutesFromAToB = findAllROutesFromAToB(findRoute);
-        if (!allROutesFromAToB.isEmpty()){
+        if (!allROutesFromAToB.isEmpty()) {
             final String apiGatewayURL = "http://localhost:9084/createbooking/";
             try {
                 uri = new URI(apiGatewayURL);
                 //allROutesFromAToB send somehow
-                BookingDTO bookingDTO1 =  restTemplate.postForObject(uri, allROutesFromAToB, BookingDTO.class);
+                BookingDTO bookingDTO1 = restTemplate.postForObject(uri, allROutesFromAToB, BookingDTO.class);
 
                 return true;
             } catch (URISyntaxException e) {

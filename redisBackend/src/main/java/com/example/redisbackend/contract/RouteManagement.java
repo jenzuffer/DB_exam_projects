@@ -15,4 +15,6 @@ public interface RouteManagement {
     Route getLeastSwitchesOnRouteAtoB(String aDestination, String bDestination);
 
     boolean addRouteCache(FindRoute findroute, Set<Route> route);
+
+    boolean addShortestRouteCache(FindRoute findroute, Route route);
 }

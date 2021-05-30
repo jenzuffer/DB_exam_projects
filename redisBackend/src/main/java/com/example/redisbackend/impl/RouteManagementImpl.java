@@ -22,13 +22,15 @@ public class RouteManagementImpl implements RouteManagement {
     public Set<Route> getAllRoutesFromAToB(String departure, String destination) {
         String strRouteFromAToB = "from " + departure + " to " + destination;
         Gson gson = new Gson();
-        Set<String> smembers = jedis.smembers(strRouteFromAToB);
-        Set<Route> routes = new HashSet();
-        for (String json : smembers) {
-            Route route = gson.fromJson(json, Route.class);
-            routes.add(route);
+        Set<Route> routesreturn = new HashSet();
+        Set<String> json = jedis.smembers(strRouteFromAToB);
+        for (String str : json) {
+            Route[] routes = gson.fromJson(str, Route[].class);
+            for (Route route : routes) {
+                routesreturn.add(route);
+            }
         }
-        return routes;
+        return routesreturn;
     }
 
     @Override
@@ -37,8 +39,18 @@ public class RouteManagementImpl implements RouteManagement {
     }
 
     @Override
-    public Route getShortestRouteFromAtoB(String aDestination, String bDestination) {
-        return null;
+    public Route getShortestRouteFromAtoB(String departure, String destination) {
+        String strRouteFromAToB = "shortest from " + departure + " to " + destination;
+        Gson gson = new Gson();
+        Set<String> json = jedis.smembers(strRouteFromAToB);
+        Route route = null;
+        for (String str : json) {
+            Route[] routes = gson.fromJson(str, Route[].class);
+            for (Route route1 : routes) {
+                route = route1;
+            }
+        }
+        return route;
     }
 
     @Override
@@ -53,6 +65,17 @@ public class RouteManagementImpl implements RouteManagement {
         Gson gson = new Gson();
         String json = gson.toJson(route);
         String strRouteFromAToB = "from " + origin + " to " + destination;
+        jedis.sadd(strRouteFromAToB, json);
+        return true;
+    }
+
+    @Override
+    public boolean addShortestRouteCache(FindRoute findroute, Route route) {
+        String origin = findroute.departure;
+        String destination = findroute.destination;
+        Gson gson = new Gson();
+        String json = gson.toJson(route);
+        String strRouteFromAToB = "shortest from " + origin + " to " + destination;
         jedis.sadd(strRouteFromAToB, json);
         return true;
     }
