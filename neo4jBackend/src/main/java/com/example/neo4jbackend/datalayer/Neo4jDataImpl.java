@@ -50,7 +50,6 @@ public class Neo4jDataImpl {
                         Route routeObject = mapper.convertValue(record.asMap() , Route.class);
                         sets.add(routeObject);
                     }
-
                     return sets;
                 }
             });

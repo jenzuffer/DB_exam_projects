@@ -37,9 +37,10 @@ public class RouteController {
             try {
                 uri = new URI(apiGatewayURL);
                 Route[] var  =  restTemplate.postForObject(uri,findRoute, Route[].class);
-
-                //routeManagement.addRouteCache(findRoute, allRoutesFromAToB);
-
+                for (Route route : var){
+                    allRoutesFromAToB.add(route);
+                }
+                routeManagement.addRouteCache(findRoute, allRoutesFromAToB);
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
