@@ -11,5 +11,5 @@ method: get
 json body:
 {
     "departure": "OKA",
-    "destination": "DMQ"
+    "destination": "SCO"
 }

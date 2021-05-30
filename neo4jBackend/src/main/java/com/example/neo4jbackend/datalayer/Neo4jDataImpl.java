@@ -14,6 +14,7 @@ import java.util.Set;
 
 public class Neo4jDataImpl {
     private static Driver driver = null;
+
     private static void closeDriver() {
         driver.close();
     }
@@ -26,48 +27,37 @@ public class Neo4jDataImpl {
         }
     }
 
-    public Set<Route> getRoutesToDestination(String destination) {
-        try (Session session = driver.session()) {
-            Set<Route> routes = (Set<Route>)session.writeTransaction(new TransactionWork() {
-                @Override
-                public Set<Route> execute(Transaction tx) {
-                    HashSet<Route> sets = new HashSet<>();
-                    Result result = tx.run("CREATE (a:Greeting) " +
-                                    "SET a.message = $message " +
-                                    "RETURN a.message + ', from node ' + id(a)",
-                            parameters("message", destination));
-                    return sets;
-                }
-            });
-            return routes;
-        }
-    }
-
     public Set<Route> getRoutesFromAtoB(FindRoute findRoute) {
         try (Session session = driver.session()) {
             Set<Route> routes = (Set<Route>) session.writeTransaction(new TransactionWork() {
                 @Override
                 public Set<Route> execute(Transaction tx) {
                     HashSet<Route> sets = new HashSet<>();
-                    Result result = tx.run("MATCH (source:Airport {id: '$sourceAir'}), (target:Airport {id: '$destiAir'})\n" +
-                            "CALL gds.beta.allShortestPaths.dijkstra.stream('myGraph1', {\n" +
+                    Result result = tx.run("MATCH (source:Airport {id: 'OKA'}), (target:Airport {id: 'SCO'})\n" +
+                            "CALL gds.allShortestPaths.dijkstra.stream('myGraph1', {\n" +
                             "    sourceNode: id(source),\n" +
                             "    relationshipWeightProperty: 'distance'\n" +
                             "})\n" +
                             "YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs\n" +
                             "RETURN\n" +
-                            "    index,\n" +
-                            "    gds.util.asNode(sourceNode).name AS sourceNodeName,\n" +
-                            "    gds.util.asNode(targetNode).name AS targetNodeName,\n" +
+                            "    gds.util.asNode(sourceNode).name AS departure,\n" +
+                            "    gds.util.asNode(targetNode).name AS destination,\n" +
                             "    totalCost,\n" +
                             "    [nodeId IN nodeIds | gds.util.asNode(nodeId).name] AS nodeNames,\n" +
                             "    costs\n" +
                             "ORDER BY costs", parameters("sourceAir", findRoute.departure, "destiAir", findRoute.destination));
                     List<Record> list = result.list();
-                    for (Record record : list){
-                        System.out.println("");
+                    for (Record record : list) {
+                        Route record1 = (Route) record;
+                        System.out.println(record1);
+                        /*
+                        for (Map.Entry<String, Object> strobject : stringObjectMap.entrySet()) {
+
+                            System.out.println("strobject.getKey(): " + strobject.getKey());
+                            System.out.println("strobject.getValue(): " + strobject.getValue());
+                        }*/
                     }
-                return sets;
+                    return sets;
                 }
             });
             return routes;

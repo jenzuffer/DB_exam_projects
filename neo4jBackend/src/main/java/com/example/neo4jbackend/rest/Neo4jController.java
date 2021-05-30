@@ -19,16 +19,6 @@ public class Neo4jController {
     private RestTemplate restTemplate = new RestTemplate();
     private URI uri;
 
-
-
-    @GetMapping("/routestodestination/")
-    @ResponseBody
-    public Set<Route> getRoutesToDestination(@RequestBody String bDestination) {
-        //check neo4j for route og opdater så redis cache
-        Set<Route> routes = neo4jDataimpl.getRoutesToDestination(bDestination);
-        return routes;
-    }
-
     @PostMapping("/allroutes/")
     @ResponseBody
     public Set<Route> getRoutesfromAtoB(@RequestBody FindRoute findRoute) {
