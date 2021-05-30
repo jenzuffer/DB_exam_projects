@@ -1,6 +1,7 @@
 package com.example.redisbackend.impl;
 
 import com.example.redisbackend.contract.RouteManagement;
+import com.example.redisbackend.dto.FindRoute;
 import com.example.redisbackend.dto.Route;
 import com.google.gson.Gson;
 import redis.clients.jedis.*;
@@ -50,9 +51,9 @@ public class RouteManagementImpl implements RouteManagement {
     }
 
     @Override
-    public boolean addRouteCache(Route route) {
-        String origin = route.origin;
-        String destination = route.destination;
+    public boolean addRouteCache(FindRoute findroute, Set<Route> route) {
+        String origin = findroute.departure;
+        String destination = findroute.destination;
         Gson gson = new Gson();
         String json = gson.toJson(route);
         String strFrom = "from " + origin;

@@ -1,5 +1,6 @@
 package com.example.redisbackend.contract;
 
+import com.example.redisbackend.dto.FindRoute;
 import com.example.redisbackend.dto.Route;
 
 import java.util.Set;
@@ -14,5 +15,5 @@ public interface RouteManagement {
 
     Route getLeastSwitchesOnRouteAtoB(String aDestination, String bDestination);
 
-    boolean addRouteCache(Route route);
+    boolean addRouteCache(FindRoute findroute, Set<Route> route);
 }

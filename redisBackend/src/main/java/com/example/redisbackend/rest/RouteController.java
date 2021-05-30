@@ -1,6 +1,7 @@
 package com.example.redisbackend.rest;
 
 
+import com.example.redisbackend.dto.BookingDTO;
 import com.example.redisbackend.dto.FindRoute;
 import com.example.redisbackend.dto.Route;
 import com.example.redisbackend.impl.RouteManagementImpl;
@@ -29,7 +30,7 @@ public class RouteController {
 
 
 
-    @GetMapping("/allroutesto}")
+    @GetMapping("/allroutesto")
     public Set<Route> findAllRoutesTo(@RequestBody String bDestination) {
         Set<Route> allRoutesToB = routeManagement.getAllRoutesToB(bDestination);
         if (allRoutesToB.isEmpty()) {
@@ -45,7 +46,7 @@ public class RouteController {
         return allRoutesToB;
     }
 
-    @GetMapping("/allroutesAtoB}")
+    @GetMapping("/allroutesAtoB")
     public Set<Route> findAllROutesFromAToB(@RequestBody FindRoute findRoute) {
         Set<Route> allRoutesFromAToB = routeManagement.getAllRoutesFromAToB(findRoute.departure, findRoute.destination);
         if (allRoutesFromAToB.isEmpty()) {
@@ -53,6 +54,7 @@ public class RouteController {
             try {
                 uri = new URI(apiGatewayURL);
                 Set<Route> forEntity = (Set<Route>) restTemplate.postForObject(uri,findRoute, Route.class);
+                routeManagement.addRouteCache(findRoute, forEntity);
                 System.out.println("forEntity: " + forEntity);
             } catch (URISyntaxException e) {
                 e.printStackTrace();
@@ -62,10 +64,22 @@ public class RouteController {
     }
 
 
+    @PostMapping("/createBooking")
+    public boolean createBooking(@RequestBody BookingDTO bookingDTO){
+        FindRoute findRoute = new FindRoute(bookingDTO.getAirportDeparture(), bookingDTO.getAirportArrival());
+        Set<Route> allROutesFromAToB = findAllROutesFromAToB(findRoute);
+        if (!allROutesFromAToB.isEmpty()){
+            final String apiGatewayURL = "http://localhost:9084/createbooking/";
+            try {
+                uri = new URI(apiGatewayURL);
+                //allROutesFromAToB send somehow
+                BookingDTO bookingDTO1 =  restTemplate.postForObject(uri, allROutesFromAToB, BookingDTO.class);
 
-    //what is this going to be used for ?
-    @PostMapping("/updateroutecache")
-    public boolean addRouteCache(@RequestBody Route route) {
-        return routeManagement.addRouteCache(route);
+                return true;
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }
