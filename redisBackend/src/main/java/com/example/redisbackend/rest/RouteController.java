@@ -36,9 +36,10 @@ public class RouteController {
             final String apiGatewayURL = "http://localhost:9081/neo4j/allroutes/";
             try {
                 uri = new URI(apiGatewayURL);
-                allRoutesFromAToB = (Set<Route>) restTemplate.postForObject(uri,findRoute, Route.class);
-                routeManagement.addRouteCache(findRoute, allRoutesFromAToB);
-                System.out.println("forEntity: " + allRoutesFromAToB);
+                Route[] var  =  restTemplate.postForObject(uri,findRoute, Route[].class);
+
+                //routeManagement.addRouteCache(findRoute, allRoutesFromAToB);
+
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }

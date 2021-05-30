@@ -1,47 +1,64 @@
 package com.example.redisbackend.dto;
+import java.util.List;
 
 public class Route {
-    public float kilometer_distance;
-    public float price;
+    public float totalCost;
     public String flight_duration;
     public String destination;
-    public String origin;
-    public int flight_switches;
+    public String departure;
+    public List<String> nodeNames;
+    public List<String> costs;
 
-    public Route(float kilometer_distance, float price, String flight_duration,
-                 String destination, String origin, int flight_switches) {
-        this.kilometer_distance = kilometer_distance;
-        this.price = price;
+    public Route(float totalCost, String flight_duration, String destination, String departure, List<String> nodeNames, List<String> costs) {
+        this.totalCost = totalCost;
         this.flight_duration = flight_duration;
         this.destination = destination;
-        this.origin = origin;
-        this.flight_switches = flight_switches;
+        this.departure = departure;
+        this.nodeNames = nodeNames;
+        this.costs = costs;
     }
 
     public Route() {
     }
 
-    public void setKilometer_distance(float kilometer_distance) {
-        this.kilometer_distance = kilometer_distance;
+    public Route setCosts(List<String> costs) {
+        this.costs = costs;
+        return this;
     }
 
-    public void setPrice(float price) {
-        this.price = price;
+    public Route setTotalCost(float totalCost) {
+        this.totalCost = totalCost;
+        return this;
     }
 
-    public void setFlight_duration(String flight_duration) {
+    public Route setFlight_duration(String flight_duration) {
         this.flight_duration = flight_duration;
+        return this;
     }
 
-    public void setDestination(String destination) {
+    public Route setDestination(String destination) {
         this.destination = destination;
+        return this;
     }
 
-    public void setOrigin(String origin) {
-        this.origin = origin;
+    public Route setDeparture(String departure) {
+        this.departure = departure;
+        return this;
     }
 
-    public void setFlight_switches(int flight_switches) {
-        this.flight_switches = flight_switches;
+    @Override
+    public String toString() {
+        return "Route{" +
+                "totalCost=" + totalCost +
+                ", flight_duration='" + flight_duration + '\'' +
+                ", destination='" + destination + '\'' +
+                ", departure='" + departure + '\'' +
+                ", nodeNames=" + nodeNames +
+                '}';
+    }
+
+    public Route setNodeNames(List<String> nodeNames) {
+        this.nodeNames = nodeNames;
+        return this;
     }
 }

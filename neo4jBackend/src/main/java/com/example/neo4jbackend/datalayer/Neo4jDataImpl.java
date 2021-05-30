@@ -2,15 +2,13 @@ package com.example.neo4jbackend.datalayer;
 
 import com.example.neo4jbackend.dto.FindRoute;
 import com.example.neo4jbackend.dto.Route;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.neo4j.driver.*;
 import org.neo4j.driver.Record;
 
 import static org.neo4j.driver.Values.parameters;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Neo4jDataImpl {
     private static Driver driver = null;
@@ -27,13 +25,13 @@ public class Neo4jDataImpl {
         }
     }
 
-    public Set<Route> getRoutesFromAtoB(FindRoute findRoute) {
+    public List<Route> getRoutesFromAtoB(FindRoute findRoute) {
         try (Session session = driver.session()) {
-            Set<Route> routes = (Set<Route>) session.writeTransaction(new TransactionWork() {
+            List<Route> routes = (List<Route>) session.writeTransaction(new TransactionWork() {
                 @Override
-                public Set<Route> execute(Transaction tx) {
-                    HashSet<Route> sets = new HashSet<>();
-                    Result result = tx.run("MATCH (source:Airport {id: 'OKA'}), (target:Airport {id: 'SCO'})\n" +
+                public List<Route> execute(Transaction tx) {
+                    List<Route> sets = new ArrayList<Route>();
+                    Result result = tx.run("MATCH (source:Airport {id: 'URC'}), (target:Airport {id: 'SCO'})\n" +
                             "CALL gds.allShortestPaths.dijkstra.stream('myGraph1', {\n" +
                             "    sourceNode: id(source),\n" +
                             "    relationshipWeightProperty: 'distance'\n" +
@@ -48,15 +46,11 @@ public class Neo4jDataImpl {
                             "ORDER BY costs", parameters("sourceAir", findRoute.departure, "destiAir", findRoute.destination));
                     List<Record> list = result.list();
                     for (Record record : list) {
-                        Route record1 = (Route) record;
-                        System.out.println(record1);
-                        /*
-                        for (Map.Entry<String, Object> strobject : stringObjectMap.entrySet()) {
-
-                            System.out.println("strobject.getKey(): " + strobject.getKey());
-                            System.out.println("strobject.getValue(): " + strobject.getValue());
-                        }*/
+                        ObjectMapper mapper = new ObjectMapper();
+                        Route routeObject = mapper.convertValue(record.asMap() , Route.class);
+                        sets.add(routeObject);
                     }
+
                     return sets;
                 }
             });

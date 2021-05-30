@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.*;
 import java.util.Set;
 
 @RestController
@@ -21,7 +22,7 @@ public class Neo4jController {
 
     @PostMapping("/allroutes/")
     @ResponseBody
-    public Set<Route> getRoutesfromAtoB(@RequestBody FindRoute findRoute) {
+    public List<Route> getRoutesfromAtoB(@RequestBody FindRoute findRoute) {
         return neo4jDataimpl.getRoutesFromAtoB(findRoute);
     }
 }
