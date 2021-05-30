@@ -73,16 +73,18 @@ public class Neo4jDataImpl {
                             "})\n" +
                             "YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs\n" +
                             "RETURN\n" +
-                            "    index,\n" +
-                            "    gds.util.asNode(sourceNode).name AS sourceNodeName,\n" +
-                            "    gds.util.asNode(targetNode).name AS targetNodeName,\n" +
+                            "    gds.util.asNode(sourceNode).name AS departure,\n" +
+                            "    gds.util.asNode(targetNode).name AS destination,\n" +
                             "    totalCost,\n" +
                             "    [nodeId IN nodeIds | gds.util.asNode(nodeId).name] AS nodeNames,\n" +
                             "    costs\n" +
                             "ORDER BY costs");
-                    Record single = result.single();
-                    ObjectMapper mapper = new ObjectMapper();
-                    route = mapper.convertValue(single.asMap(), Route.class);
+                    List<Record> list = result.list();
+                    for (Record record : list) {
+                        ObjectMapper mapper = new ObjectMapper();
+                        Route routeObject = mapper.convertValue(record.asMap(), Route.class);
+                        route = routeObject;
+                    }
                     return route;
                 }
             });

@@ -26,7 +26,7 @@ public class Neo4jController {
         return neo4jDataimpl.getRoutesFromAtoB(findRoute);
     }
 
-    @PostMapping("/shortestroutes/")
+    @PostMapping("/shortestroute/")
     @ResponseBody
     public Route getShortestRoutefromAtoB(@RequestBody FindRoute findRoute) {
         return neo4jDataimpl.getShortestRouteFromAtoB(findRoute);

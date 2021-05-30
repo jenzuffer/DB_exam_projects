@@ -52,8 +52,8 @@ public class RouteController {
             final String apiGatewayURL = "http://localhost:9081/neo4j/shortestroute/";
             try {
                 uri = new URI(apiGatewayURL);
-                shortestRouteFromAtoB = restTemplate.postForObject(uri, findRoute, Route.class);
-                System.out.println("shortestRouteFromAtoB: " + shortestRouteFromAtoB.destination);
+                Route routes = restTemplate.postForObject(uri, findRoute, Route.class);
+                shortestRouteFromAtoB = routes;
                 routeManagement.addShortestRouteCache(findRoute, shortestRouteFromAtoB);
             } catch (URISyntaxException e) {
                 e.printStackTrace();

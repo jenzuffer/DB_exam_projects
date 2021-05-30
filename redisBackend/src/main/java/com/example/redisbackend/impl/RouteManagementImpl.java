@@ -45,10 +45,7 @@ public class RouteManagementImpl implements RouteManagement {
         Set<String> json = jedis.smembers(strRouteFromAToB);
         Route route = null;
         for (String str : json) {
-            Route[] routes = gson.fromJson(str, Route[].class);
-            for (Route route1 : routes) {
-                route = route1;
-            }
+            route = gson.fromJson(str, Route.class);
         }
         return route;
     }

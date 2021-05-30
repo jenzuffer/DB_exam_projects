@@ -13,3 +13,11 @@ json body:
     "departure": "OKA",
     "destination": "SCO"
 }
+
+url: http://localhost:9083/route/shortestRouteAToB/
+method: get
+json bdoy:
+{
+    "departure": "OKA",
+    "destination": "SCO"
+}
