@@ -17,22 +17,18 @@ public class RouteManagementImpl implements RouteManagement {
         this.jedis = jedis;
     }
 
+
     @Override
-    public Set<Route> getAllRoutesToB(String bDestination) {
-        String strTo = "to " + bDestination;
+    public Set<Route> getAllRoutesFromAToB(String departure, String destination) {
+        String strRouteFromAToB = "from " + departure + " to " + destination;
         Gson gson = new Gson();
-        Set<String> smembers = jedis.smembers(strTo);
+        Set<String> smembers = jedis.smembers(strRouteFromAToB);
         Set<Route> routes = new HashSet();
         for (String json : smembers) {
             Route route = gson.fromJson(json, Route.class);
             routes.add(route);
         }
         return routes;
-    }
-
-    @Override
-    public Set<Route> getAllRoutesFromAToB(String aDestination, String bDestination) {
-        return null;
     }
 
     @Override
@@ -56,10 +52,8 @@ public class RouteManagementImpl implements RouteManagement {
         String destination = findroute.destination;
         Gson gson = new Gson();
         String json = gson.toJson(route);
-        String strFrom = "from " + origin;
-        String strTo = "to " + destination;
-        jedis.sadd(strFrom, json);
-        jedis.sadd(strTo, json);
+        String strRouteFromAToB = "from " + origin + " to " + destination;
+        jedis.sadd(strRouteFromAToB, json);
         return true;
     }
 

@@ -29,33 +29,16 @@ public class RouteController {
     URI uri;
 
 
-
-    @GetMapping("/allroutesto")
-    public Set<Route> findAllRoutesTo(@RequestBody String bDestination) {
-        Set<Route> allRoutesToB = routeManagement.getAllRoutesToB(bDestination);
-        if (allRoutesToB.isEmpty()) {
-            final String apiGatewayURL = "http://localhost:9081/routestodestination/" + bDestination;
-            try {
-                uri = new URI(apiGatewayURL);
-                Set<Route> forEntity = (Set<Route>) restTemplate.postForObject(uri,bDestination, Route.class);
-                System.out.println("forEntity: " + forEntity);
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-        }
-        return allRoutesToB;
-    }
-
     @GetMapping("/allroutesAtoB")
     public Set<Route> findAllROutesFromAToB(@RequestBody FindRoute findRoute) {
         Set<Route> allRoutesFromAToB = routeManagement.getAllRoutesFromAToB(findRoute.departure, findRoute.destination);
         if (allRoutesFromAToB.isEmpty()) {
-            final String apiGatewayURL = "http://localhost:9081/allroutes/" + findRoute.departure + "/" + findRoute.destination;
+            final String apiGatewayURL = "http://localhost:9081/neo4j/allroutes/";
             try {
                 uri = new URI(apiGatewayURL);
-                Set<Route> forEntity = (Set<Route>) restTemplate.postForObject(uri,findRoute, Route.class);
-                routeManagement.addRouteCache(findRoute, forEntity);
-                System.out.println("forEntity: " + forEntity);
+                allRoutesFromAToB = (Set<Route>) restTemplate.postForObject(uri,findRoute, Route.class);
+                routeManagement.addRouteCache(findRoute, allRoutesFromAToB);
+                System.out.println("forEntity: " + allRoutesFromAToB);
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }

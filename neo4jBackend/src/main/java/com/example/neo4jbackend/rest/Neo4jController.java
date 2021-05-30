@@ -29,7 +29,7 @@ public class Neo4jController {
         return routes;
     }
 
-    @GetMapping("/allroutes/")
+    @PostMapping("/allroutes/")
     @ResponseBody
     public Set<Route> getRoutesfromAtoB(@RequestBody FindRoute findRoute) {
         return neo4jDataimpl.getRoutesFromAtoB(findRoute);

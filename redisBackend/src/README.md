@@ -6,3 +6,10 @@ docker exec -it redis_db redis-cli
 
 
 Postman Queries:
+url: http://localhost:9083/route/allroutesAtoB/
+method: get
+json body:
+{
+    "departure": "OKA",
+    "destination": "DMQ"
+}
