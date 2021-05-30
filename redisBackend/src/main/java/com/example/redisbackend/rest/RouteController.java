@@ -64,21 +64,21 @@ public class RouteController {
 
 
     @PostMapping("/createBooking")
-    public boolean createBooking(@RequestBody BookingDTO bookingDTO) {
+    public BookingDTO createBooking(@RequestBody BookingDTO bookingDTO) {
         FindRoute findRoute = new FindRoute(bookingDTO.getAirportDeparture(), bookingDTO.getAirportArrival());
         Set<Route> allROutesFromAToB = findAllROutesFromAToB(findRoute);
+        BookingDTO bookingDTO1 = null;
         if (!allROutesFromAToB.isEmpty()) {
             final String apiGatewayURL = "http://localhost:9084/createbooking/";
             try {
                 uri = new URI(apiGatewayURL);
                 //allROutesFromAToB send somehow
-                BookingDTO bookingDTO1 = restTemplate.postForObject(uri, allROutesFromAToB, BookingDTO.class);
+                bookingDTO1 = restTemplate.postForObject(uri, allROutesFromAToB, BookingDTO.class);
 
-                return true;
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
         }
-        return false;
+        return bookingDTO1;
     }
 }

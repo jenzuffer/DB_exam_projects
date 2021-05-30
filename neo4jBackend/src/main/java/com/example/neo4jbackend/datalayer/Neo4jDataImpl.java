@@ -15,6 +15,7 @@ public class Neo4jDataImpl {
 
     private static void closeDriver() {
         driver.close();
+
     }
 
     public Neo4jDataImpl() {
