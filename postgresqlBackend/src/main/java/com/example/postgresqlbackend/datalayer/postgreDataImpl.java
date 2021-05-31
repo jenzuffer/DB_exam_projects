@@ -35,7 +35,7 @@ public class postgreDataImpl {
     public boolean createBooking(BookingDTO bookingDTO) {
 
         String sql = "insert into public.booking_information(passport, bookintcount, departure, " +
-                "destination, airportnames ) values(?, ?, ?, ?, ?)";
+                "destination, airportnames ) values(?, ?, ?, ?, ?) ON CONFLICT DO NOTHING";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, bookingDTO.getPassport());
@@ -43,7 +43,7 @@ public class postgreDataImpl {
             statement.setString(3, bookingDTO.getAirportDeparture());
             statement.setString(4, bookingDTO.getAirportArrival());
             statement.setArray(5,  connection.createArrayOf("text", bookingDTO.getAirportNames().toArray()));
-            System.out.println(statement.toString());
+            //System.out.println(statement.toString());
             statement.executeUpdate();
             statement.close();
             return true;
