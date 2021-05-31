@@ -1,5 +1,7 @@
 package com.example.redisbackend.dto;
 
+import java.util.List;
+
 public class BookingDTO {
 
     private int bookingCount;
@@ -8,7 +10,8 @@ public class BookingDTO {
     private String airportArrival;
     private String distance;
     private String time;
-
+    private List<String> airportNames;
+    private List<String> costs;
 
     public String getPassport() {
         return passport;
@@ -25,6 +28,9 @@ public class BookingDTO {
     public String getAirportArrival() {
         return airportArrival;
     }
+    public List<String> getAirportNames() {
+        return airportNames;
+    }
 
     public String getDistance() {
         return distance;
@@ -34,19 +40,11 @@ public class BookingDTO {
         return time;
     }
 
-    public BookingDTO(int bookingCount, String passport, String airportDeparture, String airportArrival, String distance, String time) {
+    public BookingDTO(int bookingCount, String passport, String airportDeparture, String airportArrival, List<String> airportNames) {
         this.bookingCount = bookingCount;
         this.passport = passport;
         this.airportDeparture = airportDeparture;
         this.airportArrival = airportArrival;
-        this.distance = distance;
-        this.time = time;
-    }
-
-    public BookingDTO(int bookingCount, String passport, String airportDeparture, String airportArrival) {
-        this.bookingCount = bookingCount;
-        this.passport = passport;
-        this.airportDeparture = airportDeparture;
-        this.airportArrival = airportArrival;
+        this.airportNames = airportNames;
     }
 }

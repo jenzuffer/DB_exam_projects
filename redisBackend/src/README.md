@@ -16,8 +16,23 @@ json body:
 
 url: http://localhost:9083/route/shortestRouteAToB/
 method: get
-json bdoy:
+json body:
 {
     "departure": "OKA",
     "destination": "SCO"
+}
+
+url: http://localhost:9083/route/createBooking/
+method: post
+json body:
+{
+    "bookingCount": 4,
+    "passport": "1996ABCD Lastname",
+    "airportDeparture": "OKA",
+    "airportArrival": "SCO",
+    "airportNames":[
+        "Ürümqi Diwopu International Airport",
+        "Almaty Airport",
+        "Aktau Airport"
+    ]
 }

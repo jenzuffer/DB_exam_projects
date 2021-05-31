@@ -13,6 +13,7 @@ import redis.clients.jedis.Jedis;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.PreparedStatement;
 import java.util.*;
 
 @RestController
@@ -63,22 +64,16 @@ public class RouteController {
     }
 
 
-    @PostMapping("/createBooking")
-    public BookingDTO createBooking(@RequestBody BookingDTO bookingDTO) {
-        FindRoute findRoute = new FindRoute(bookingDTO.getAirportDeparture(), bookingDTO.getAirportArrival());
-        Set<Route> allROutesFromAToB = findAllROutesFromAToB(findRoute);
-        BookingDTO bookingDTO1 = null;
-        if (!allROutesFromAToB.isEmpty()) {
-            final String apiGatewayURL = "http://localhost:9084/createbooking/";
-            try {
-                uri = new URI(apiGatewayURL);
-                //allROutesFromAToB send somehow
-                bookingDTO1 = restTemplate.postForObject(uri, allROutesFromAToB, BookingDTO.class);
-
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+    @PostMapping("/createbooking")
+    public boolean createBooking(@RequestBody BookingDTO bookingDTO) {
+        boolean answer = true;
+        final String apiGatewayURL = "http://localhost:9084/booking/createbooking/";
+        try {
+            uri = new URI(apiGatewayURL);
+            answer = restTemplate.postForObject(uri, bookingDTO, boolean.class);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
-        return bookingDTO1;
+        return answer;
     }
 }
