@@ -32,7 +32,7 @@ public class Neo4jDataImpl {
                 @Override
                 public List<Route> execute(Transaction tx) {
                     List<Route> sets = new ArrayList<Route>();
-                    Result result = tx.run("MATCH (source:Airport {id: 'URC'}), (target:Airport {id: 'SCO'})\n" +
+                    Result result = tx.run("MATCH (source:Airport {id: $sourceAir}), (target:Airport {id: $destiAir})\n" +
                             "CALL gds.allShortestPaths.dijkstra.stream('myGraph1', {\n" +
                             "    sourceNode: id(source),\n" +
                             "    relationshipWeightProperty: 'distance'\n" +
@@ -64,7 +64,7 @@ public class Neo4jDataImpl {
                 @Override
                 public Route execute(Transaction tx) {
                     Route route = new Route();
-                    Result result = tx.run("MATCH (source:Airport {id: 'URC'}), (target:Airport {id: 'SCO'})\n" +
+                    Result result = tx.run("MATCH (source:Airport {id: $sourceAir}), (target:Airport {id: $destiAir})\n" +
                             "CALL gds.shortestPath.astar.stream('myGraph', {\n" +
                             "    sourceNode: id(source),\n" +
                             "    targetNode: id(target),\n" +
@@ -79,7 +79,7 @@ public class Neo4jDataImpl {
                             "    totalCost,\n" +
                             "    [nodeId IN nodeIds | gds.util.asNode(nodeId).name] AS nodeNames,\n" +
                             "    costs\n" +
-                            "ORDER BY costs");
+                            "ORDER BY costs", parameters("sourceAir", findRoute.departure, "destiAir", findRoute.destination));
                     List<Record> list = result.list();
                     for (Record record : list) {
                         ObjectMapper mapper = new ObjectMapper();

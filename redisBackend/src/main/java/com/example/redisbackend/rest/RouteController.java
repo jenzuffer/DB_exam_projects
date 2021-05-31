@@ -33,8 +33,8 @@ public class RouteController {
             final String apiGatewayURL = "http://localhost:9081/neo4j/allroutes/";
             try {
                 uri = new URI(apiGatewayURL);
-                Route[] var = restTemplate.postForObject(uri, findRoute, Route[].class);
-                for (Route route : var) {
+                Route[] routes = restTemplate.postForObject(uri, findRoute, Route[].class);
+                for (Route route : routes) {
                     allRoutesFromAToB.add(route);
                 }
                 routeManagement.addRouteCache(findRoute, allRoutesFromAToB);

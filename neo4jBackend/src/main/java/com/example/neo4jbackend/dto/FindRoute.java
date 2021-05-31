@@ -1,5 +1,7 @@
 package com.example.neo4jbackend.dto;
 
+import java.util.Objects;
+
 public class FindRoute {
 
     @Override
@@ -17,5 +19,6 @@ public class FindRoute {
         this.departure = departure;
         this.destination = destination;
     }
+
 
 }
